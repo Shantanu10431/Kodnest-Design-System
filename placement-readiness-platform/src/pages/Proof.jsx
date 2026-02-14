@@ -166,6 +166,16 @@ Core Capabilities:
                             <CardDescription>Required for final submission.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
+                            <button
+                                onClick={() => setUrls({
+                                    lovable: 'https://lovable.dev/project/demo-prp',
+                                    github: 'https://github.com/username/demo-prp',
+                                    deploy: 'https://demo-prp.vercel.app'
+                                })}
+                                className="text-xs text-indigo-600 hover:text-indigo-800 hover:underline font-medium mb-2"
+                            >
+                                Fill with Demo Data
+                            </button>
                             <div className="space-y-2">
                                 <label className="text-sm font-medium flex items-center gap-2"><LinkIcon className="w-4 h-4" /> Lovable Project Link</label>
                                 <input
