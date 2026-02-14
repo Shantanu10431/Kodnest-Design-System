@@ -23,13 +23,19 @@ export default function Home() {
                     Create your premium resume in minutes.
                 </p>
 
-                <div className="pt-8">
+                <div className="pt-8 flex flex-col sm:flex-row gap-4 justify-center">
                     <Link
                         to="/builder"
                         className="inline-flex items-center gap-2 px-8 py-4 bg-brand-600 text-white rounded-full text-lg font-semibold hover:bg-brand-700 transition-all hover:scale-105 shadow-lg shadow-brand-100"
                     >
                         Start Building
                         <ArrowRight size={20} />
+                    </Link>
+                    <Link
+                        to="/builder?demo=true"
+                        className="inline-flex items-center gap-2 px-8 py-4 bg-white text-gray-700 border border-gray-200 rounded-full text-lg font-semibold hover:bg-gray-50 transition-all hover:scale-105"
+                    >
+                        View Demo
                     </Link>
                 </div>
 

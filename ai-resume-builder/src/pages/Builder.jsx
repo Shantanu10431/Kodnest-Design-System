@@ -1,6 +1,6 @@
 
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useResume } from '../context/ResumeContext';
 import ResumePreview from '../components/ResumePreview';
 import { ChevronDown, ChevronUp, Plus, Trash2, Wand2, Eye, Save } from 'lucide-react';
@@ -8,6 +8,13 @@ import { ChevronDown, ChevronUp, Plus, Trash2, Wand2, Eye, Save } from 'lucide-r
 export default function Builder() {
     const { resumeData, updatePersonal, updateSection, loadSample } = useResume();
     const [activeSection, setActiveSection] = useState('personal');
+    const [searchParams] = useSearchParams();
+
+    useEffect(() => {
+        if (searchParams.get('demo') === 'true') {
+            loadSample();
+        }
+    }, [searchParams, loadSample]);
 
     const sections = [
         { id: 'personal', label: 'Personal Info' },

@@ -29,7 +29,16 @@ export default function ResumeLayout() {
                     <span className="h-4 w-px bg-slate-300"></span>
                     <span className="text-slate-500 font-medium">{stepLabel}</span>
                 </div>
-                <div>
+                <div className="flex items-center gap-3">
+                    <a
+                        href="http://localhost:5173"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-lg text-sm font-semibold hover:shadow-lg hover:scale-105 transition-all flex items-center gap-2"
+                    >
+                        <span>View Final Output</span>
+                        <ArrowRight size={16} />
+                    </a>
                     {/* Dynamic Status Badge could go here */}
                     <span className="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-xs font-bold uppercase tracking-wide">
                         Build Track
