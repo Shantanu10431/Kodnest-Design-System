@@ -20,7 +20,7 @@ const Sidebar = () => {
                 <NavItem to="/practice" icon={<Code />} label="Practice" />
                 <NavItem to="/assessments" icon={<FileCheck />} label="Assessments" />
                 <NavItem to="/resources" icon={<BookOpen />} label="Resources" />
-                <NavItem to="/resources" icon={<BookOpen />} label="Resources" />
+
                 <NavItem to="/profile" icon={<User />} label="Profile" />
 
                 <div className="pt-4 mt-2">
