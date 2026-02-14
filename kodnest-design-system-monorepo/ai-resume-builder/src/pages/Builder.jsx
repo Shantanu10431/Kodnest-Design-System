@@ -198,32 +198,72 @@ export default function Builder() {
                                     >
                                         <Trash2 size={16} />
                                     </button>
-                                    <div className="grid grid-cols-2 gap-3 mb-3">
-                                        <Input label="Project Name" value={proj.name} onChange={(e) => {
+                                    <div className="grid grid-cols-1 gap-3 mb-3">
+                                        <Input label="Project Title" value={proj.name} onChange={(e) => {
                                             const newProj = [...resumeData.projects];
                                             newProj[index].name = e.target.value;
                                             updateSection('projects', newProj);
                                         }} />
-                                        <Input label="Link" value={proj.link} onChange={(e) => {
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-3 mb-3">
+                                        <Input label="Live URL" value={proj.liveUrl || ''} onChange={(e) => {
                                             const newProj = [...resumeData.projects];
-                                            newProj[index].link = e.target.value;
+                                            newProj[index].liveUrl = e.target.value;
                                             updateSection('projects', newProj);
                                         }} />
+                                        <Input label="GitHub URL" value={proj.githubUrl || ''} onChange={(e) => {
+                                            const newProj = [...resumeData.projects];
+                                            newProj[index].githubUrl = e.target.value;
+                                            updateSection('projects', newProj);
+                                        }} />
+                                    </div>
+                                    <div className="mb-3">
+                                        <label className="block text-xs font-medium text-gray-500 mb-1">Tech Stack</label>
+                                        <div className="p-3 bg-white rounded-lg border border-gray-200 min-h-[60px] flex flex-wrap gap-2 items-start shadow-sm">
+                                            {(proj.techStack || []).map((tech, tIndex) => (
+                                                <span key={tIndex} className="bg-gray-100 border border-gray-200 px-2 py-1 rounded-md text-xs flex items-center gap-1">
+                                                    {tech}
+                                                    <button onClick={() => {
+                                                        const newProj = [...resumeData.projects];
+                                                        newProj[index].techStack = newProj[index].techStack.filter((_, i) => i !== tIndex);
+                                                        updateSection('projects', newProj);
+                                                    }} className="text-gray-400 hover:text-red-500">×</button>
+                                                </span>
+                                            ))}
+                                            <input
+                                                type="text"
+                                                className="text-xs bg-transparent outline-none min-w-[60px] flex-grow"
+                                                placeholder="Add tech..."
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter' && e.target.value.trim()) {
+                                                        const newProj = [...resumeData.projects];
+                                                        const currentStack = newProj[index].techStack || [];
+                                                        if (!currentStack.includes(e.target.value.trim())) {
+                                                            newProj[index].techStack = [...currentStack, e.target.value.trim()];
+                                                            updateSection('projects', newProj);
+                                                        }
+                                                        e.target.value = '';
+                                                    }
+                                                }}
+                                            />
+                                        </div>
                                     </div>
                                     <GuidanceTextarea
                                         className="w-full h-32 p-3 border border-gray-200 rounded-lg text-sm resize-none custom-scrollbar"
                                         placeholder="• Built a full-stack app using... (Mention tech stack & impact)"
                                         value={proj.description}
                                         onChange={(e) => {
+                                            const val = e.target.value.slice(0, 200);
                                             const newProj = [...resumeData.projects];
-                                            newProj[index].description = e.target.value;
+                                            newProj[index].description = val;
                                             updateSection('projects', newProj);
                                         }}
                                     />
+                                    <p className="text-right text-xs text-gray-400 mt-1">{proj.description.length}/200 chars</p>
                                 </div>
                             ))}
                             <button
-                                onClick={() => updateSection('projects', [...resumeData.projects, { id: Date.now(), name: '', link: '', description: '' }])}
+                                onClick={() => updateSection('projects', [...resumeData.projects, { id: Date.now(), name: '', description: '', techStack: [], liveUrl: '', githubUrl: '' }])}
                                 className="flex items-center gap-2 text-sm font-medium text-brand-600 hover:text-brand-700"
                             >
                                 <Plus size={16} /> Add Project
@@ -272,13 +312,70 @@ export default function Builder() {
 
                         {/* Skills */}
                         <Section title="Skills" isOpen={activeSection === 'skills'} onClick={() => setActiveSection('skills')}>
-                            <p className="text-xs text-gray-500 mb-2">Comma separated skills</p>
-                            <textarea
-                                className="w-full h-24 p-3 border border-gray-200 rounded-lg text-sm resize-none"
-                                placeholder="React, Node.js, Python..."
-                                value={resumeData.skills.join(', ')}
-                                onChange={(e) => updateSection('skills', e.target.value.split(',').map(s => s.trim()))}
-                            />
+                            <div className="flex justify-between items-center mb-4">
+                                <p className="text-xs text-gray-500">Categorize your skills for better ATS parsing.</p>
+                                <button
+                                    onClick={() => {
+                                        const btn = document.getElementById('suggest-btn');
+                                        if (btn) {
+                                            btn.textContent = '✨ Suggesting...';
+                                            btn.disabled = true;
+                                        }
+                                        setTimeout(() => {
+                                            updateSection('skills', {
+                                                technical: ['TypeScript', 'React', 'Node.js', 'PostgreSQL', 'GraphQL'],
+                                                soft: ['Team Leadership', 'Problem Solving'],
+                                                tools: ['Git', 'Docker', 'AWS']
+                                            });
+                                            if (btn) {
+                                                btn.textContent = '✨ Suggest Skills';
+                                                btn.disabled = false;
+                                            }
+                                        }, 1000);
+                                    }}
+                                    id="suggest-btn"
+                                    className="text-xs font-semibold text-brand-600 hover:bg-brand-50 px-2 py-1 rounded transition-colors"
+                                >
+                                    ✨ Suggest Skills
+                                </button>
+                            </div>
+
+                            {['technical', 'soft', 'tools'].map((category) => (
+                                <div key={category} className="mb-4">
+                                    <h4 className="text-xs font-bold uppercase text-gray-400 mb-2 flex justify-between">
+                                        {category === 'tools' ? 'Tools & Technologies' : `${category} Skills`}
+                                        <span className="text-gray-300">({(resumeData.skills[category] || []).length})</span>
+                                    </h4>
+                                    <div className="p-3 bg-gray-50 rounded-lg border border-gray-100 min-h-[60px] flex flex-wrap gap-2 items-start">
+                                        {(resumeData.skills[category] || []).map((skill, index) => (
+                                            <span key={index} className="bg-white border border-gray-200 px-2 py-1 rounded-md text-sm flex items-center gap-1 shadow-sm">
+                                                {skill}
+                                                <button onClick={() => {
+                                                    const newSkills = { ...resumeData.skills };
+                                                    newSkills[category] = newSkills[category].filter((_, i) => i !== index);
+                                                    updateSection('skills', newSkills);
+                                                }} className="text-gray-400 hover:text-red-500 ml-1">×</button>
+                                            </span>
+                                        ))}
+                                        <input
+                                            type="text"
+                                            className="bg-transparent outline-none text-sm min-w-[100px] mt-1"
+                                            placeholder="Type & Enter..."
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter' && e.target.value.trim()) {
+                                                    const newSkills = { ...resumeData.skills };
+                                                    const current = newSkills[category] || [];
+                                                    if (!current.includes(e.target.value.trim())) {
+                                                        newSkills[category] = [...current, e.target.value.trim()];
+                                                        updateSection('skills', newSkills);
+                                                    }
+                                                    e.target.value = '';
+                                                }
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+                            ))}
                         </Section>
 
                     </div>

@@ -18,7 +18,11 @@ export const initialResumeState = {
     experience: [],
     education: [],
     projects: [],
-    skills: []
+    skills: {
+        technical: [],
+        soft: [],
+        tools: []
+    }
 };
 
 export const sampleResume = {
@@ -62,17 +66,50 @@ export const sampleResume = {
         {
             id: 1,
             name: 'AI Resume Builder',
-            description: 'A premium resume building tool using React and OpenAI.\nFeatures include real-time preview, PDF export, and ATS optimization.',
-            link: 'github.com/alexmorgan/resume-builder'
+            description: 'A premium resume building tool using React and OpenAI. Features include real-time preview, PDF export, and ATS optimization.',
+            techStack: ['React', 'OpenAI API', 'Tailwind'],
+            liveUrl: 'resume-builder.demo.com',
+            githubUrl: 'github.com/alexmorgan/resume-builder'
+        },
+        {
+            id: 2,
+            name: 'E-commerce Dashboard',
+            description: 'Real-time analytics dashboard for online retailers. Visualized sales data using D3.js and providing actionable insights.',
+            techStack: ['Vue.js', 'D3.js', 'Firebase'],
+            liveUrl: 'dashboard-demo.com',
+            githubUrl: 'github.com/alexmorgan/ecommerce-dash'
         }
     ],
-    skills: ['React', 'TypeScript', 'Node.js', 'Next.js', 'Tailwind CSS', 'AWS', 'Docker', 'GraphQL']
+    skills: {
+        technical: ['React', 'TypeScript', 'Node.js', 'Next.js', 'GraphQL'],
+        soft: ['Team Leadership', 'Mentoring', 'Agile/Scrum'],
+        tools: ['Docker', 'AWS', 'Git', 'Figma']
+    }
 };
 
 export function ResumeProvider({ children }) {
     const [resumeData, setResumeData] = useState(() => {
         const saved = localStorage.getItem('resumeBuilderData'); // Changed key
-        return saved ? JSON.parse(saved) : initialResumeState;
+        const parsed = saved ? JSON.parse(saved) : initialResumeState;
+
+        // Data Migration: Skills Array to Object
+        if (Array.isArray(parsed.skills)) {
+            parsed.skills = {
+                technical: parsed.skills,
+                soft: [],
+                tools: []
+            };
+        }
+
+        // Data Migration: Ensure Projects have techStack
+        parsed.projects = parsed.projects.map(p => ({
+            ...p,
+            techStack: p.techStack || [],
+            liveUrl: p.liveUrl || '',
+            githubUrl: p.githubUrl || ''
+        }));
+
+        return parsed;
     });
 
     const [template, setTemplate] = useState(() => {
@@ -120,10 +157,14 @@ export function ResumeProvider({ children }) {
         }
 
         // 4. Skills >= 8
-        if (skills.length >= 8) {
+        const totalSkills = Array.isArray(skills)
+            ? skills.length
+            : Object.values(skills).flat().length;
+
+        if (totalSkills >= 8) {
             currentScore += 10;
         } else {
-            newSuggestions.push("Add more skills (target 8+).");
+            newSuggestions.push("Add more skills (target 8+ across categories).");
         }
 
         // 5. Links

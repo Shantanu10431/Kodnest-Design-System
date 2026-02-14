@@ -1,162 +1,84 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { initialResumeState, sampleResume } from '../data/resumeData';
 
 const ResumeContext = createContext();
 
-export const initialResumeState = {
-    personal: {
-        fullName: '',
-        email: '',
-        phone: '',
-        location: '',
-        title: '',
-        website: '',
-        linkedin: '',
-        github: ''
-    },
-    summary: '',
-    experience: [],
-    education: [],
-    projects: [],
-    skills: []
-};
-
-export const sampleResume = {
-    personal: {
-        fullName: 'Alex Morgan',
-        email: 'alex.morgan@example.com',
-        phone: '+1 (555) 123-4567',
-        location: 'San Francisco, CA',
-        title: 'Senior Software Engineer',
-        website: 'alexmorgan.dev',
-        linkedin: 'linkedin.com/in/alexmorgan',
-        github: 'github.com/alexmorgan'
-    },
-    summary: 'Results-driven software engineer with 6+ years of experience building scalable web applications. Expert in React, Node.js, and Cloud Architecture. Passionate about clean code and user experience.',
-    experience: [
-        {
-            id: 1,
-            company: 'TechCorp Inc.',
-            role: 'Senior Frontend Developer',
-            date: '2021 - Present',
-            description: 'Led a team of 5 developers to rebuild the core dashboard.\nImproved performance by 40% using React Server Components.\nMentored junior developers and established code quality standards.'
-        },
-        {
-            id: 2,
-            company: 'StartupX',
-            role: 'Full Stack Developer',
-            date: '2019 - 2021',
-            description: 'Built the MVP from scratch using MERN stack.\nScaled the application to 100k+ active users.\nIntegrated Stripe payments and Twilio notifications.'
-        }
-    ],
-    education: [
-        {
-            id: 1,
-            school: 'University of Technology',
-            degree: 'B.S. Computer Science',
-            date: '2015 - 2019',
-            description: 'Graduated with Honors. President of the Coding Club.'
-        }
-    ],
-    projects: [
-        {
-            id: 1,
-            name: 'AI Resume Builder',
-            description: 'A premium resume building tool using React and OpenAI.\nFeatures include real-time preview, PDF export, and ATS optimization.',
-            link: 'github.com/alexmorgan/resume-builder'
-        }
-    ],
-    skills: ['React', 'TypeScript', 'Node.js', 'Next.js', 'Tailwind CSS', 'AWS', 'Docker', 'GraphQL']
-};
-
 export function ResumeProvider({ children }) {
     const [resumeData, setResumeData] = useState(() => {
-        const saved = localStorage.getItem('resumeBuilderData'); // Changed key
-        return saved ? JSON.parse(saved) : initialResumeState;
+        const saved = localStorage.getItem('resumeBuilderData');
+        const parsed = saved ? JSON.parse(saved) : initialResumeState;
+
+        // Data Migration: Skills Array to Object
+        if (Array.isArray(parsed.skills)) {
+            parsed.skills = {
+                technical: parsed.skills,
+                soft: [],
+                tools: []
+            };
+        }
+        return parsed;
     });
 
-    const [template, setTemplate] = useState(() => {
-        return localStorage.getItem('resumeTemplate') || 'modern';
-    });
+    const [activeSection, setActiveSection] = useState('personal');
+    const [template, setTemplate] = useState(() => localStorage.getItem('resumeTemplate') || 'modern');
+    const [themeColor, setThemeColor] = useState(() => localStorage.getItem('resumeTheme') || '#0d9488'); // Default Teal
 
-    const [score, setScore] = useState(0);
-    const [suggestions, setSuggestions] = useState([]);
-
+    // save resumeData
     useEffect(() => {
-        localStorage.setItem('resumeBuilderData', JSON.stringify(resumeData)); // Changed key
-        calculateScore();
+        localStorage.setItem('resumeBuilderData', JSON.stringify(resumeData));
     }, [resumeData]);
 
+    // save template
     useEffect(() => {
         localStorage.setItem('resumeTemplate', template);
     }, [template]);
 
-    const calculateScore = () => {
+    // save theme
+    useEffect(() => {
+        localStorage.setItem('resumeTheme', themeColor);
+    }, [themeColor]);
+
+    const { score, suggestions } = React.useMemo(() => {
         let currentScore = 0;
         let newSuggestions = [];
 
-        const { personal, summary, experience, education, projects, skills } = resumeData;
-
-        // 1. Summary Length (40-120 words)
-        const summaryWords = summary.trim().split(/\s+/).length;
-        if (summaryWords >= 40 && summaryWords <= 120) {
+        // 1. Personal Info Check (15 pts)
+        const personal = resumeData.personal;
+        if (personal.fullName && personal.email && personal.phone && personal.location) {
             currentScore += 15;
         } else {
-            newSuggestions.push("Expand summary to 40-120 words.");
+            newSuggestions.push({ id: 'personal', text: 'Complete all personal details (Name, Email, Phone, Location).' });
         }
+        if (personal.linkedin) currentScore += 5;
 
-        // 2. Projects >= 2
-        if (projects.length >= 2) {
+        // 2. Summary Check (10 pts)
+        if (resumeData.summary && resumeData.summary.length > 50) {
             currentScore += 10;
         } else {
-            newSuggestions.push("Add at least 2 projects.");
+            newSuggestions.push({ id: 'summary', text: 'Write a professional summary of at least 50 characters.' });
         }
 
-        // 3. Experience >= 1
-        if (experience.length >= 1) {
-            currentScore += 10;
-        } else {
-            newSuggestions.push("Add at least 1 internship or work experience.");
+        // 3. Experience Check (30 pts)
+        if (resumeData.experience.length >= 1) currentScore += 15;
+        if (resumeData.experience.length >= 2) currentScore += 15;
+        if (resumeData.experience.length === 0) {
+            newSuggestions.push({ id: 'experience', text: 'Add at least one professional experience.' });
         }
 
-        // 4. Skills >= 8
-        if (skills.length >= 8) {
-            currentScore += 10;
-        } else {
-            newSuggestions.push("Add more skills (target 8+).");
-        }
+        // 4. Skills Check (20 pts)
+        const totalSkills = (resumeData.skills.technical?.length || 0) + (resumeData.skills.soft?.length || 0) + (resumeData.skills.tools?.length || 0);
+        if (totalSkills >= 5) currentScore += 20;
+        else newSuggestions.push({ id: 'skills', text: `Add more skills (Current: ${totalSkills}, Target: 5+).` });
 
-        // 5. Links
-        if (personal.github || personal.linkedin) {
-            currentScore += 10;
-        }
+        // 5. Education Check (10 pts)
+        if (resumeData.education.length > 0) currentScore += 10;
 
-        // 6. Impact (Numbers)
-        const hasNumbers = [...experience, ...projects].some(item =>
-            item.description && /\d+|%|k\b|X\b/i.test(item.description)
-        );
-        if (hasNumbers) {
-            currentScore += 15;
-        } else {
-            newSuggestions.push("Add measurable impact (numbers, %, etc.) to bullets.");
-        }
+        // 6. Projects Check (10 pts)
+        if (resumeData.projects.length > 0) currentScore += 10;
 
-        // 7. Education
-        const eduComplete = education.length > 0 && education.every(e => e.school && e.degree && e.date);
-        if (eduComplete) {
-            currentScore += 10;
-        }
+        return { score: currentScore, suggestions: newSuggestions.slice(0, 3) };
+    }, [resumeData]);
 
-        // Base Score for Contact Info (to ensure 100 possible)
-        // 15+10+10+10+10+15+10 = 80. Missing 20.
-        // Adding +20 for Name + Email exists.
-        if (personal.fullName && personal.email) {
-            currentScore += 20;
-        }
-
-        setScore(Math.min(currentScore, 100));
-        setSuggestions(newSuggestions.slice(0, 3)); // Max 3 suggestions
-    };
 
     const updatePersonal = (field, value) => {
         setResumeData(prev => ({
@@ -165,17 +87,41 @@ export function ResumeProvider({ children }) {
         }));
     };
 
-    const updateSection = (section, value) => {
-        setResumeData(prev => ({ ...prev, [section]: value }));
+    const updateSection = (section, data) => {
+        setResumeData(prev => ({
+            ...prev,
+            [section]: data
+        }));
     };
 
-    const loadSample = () => setResumeData(sampleResume);
+    const updateSkills = (category, skills) => {
+        setResumeData(prev => ({
+            ...prev,
+            skills: {
+                ...prev.skills,
+                [category]: skills
+            }
+        }));
+    };
+
+    const loadSample = () => {
+        setResumeData(sampleResume);
+    };
 
     return (
-        <ResumeContext.Provider value={{ resumeData, updatePersonal, updateSection, loadSample, score, suggestions, template, setTemplate }}>
+        <ResumeContext.Provider value={{
+            resumeData, updatePersonal, updateSection, updateSkills, loadSample,
+            score, suggestions,
+            activeSection, setActiveSection,
+            template, setTemplate,
+            themeColor, setThemeColor
+        }}>
             {children}
         </ResumeContext.Provider>
     );
 }
 
-export const useResume = () => useContext(ResumeContext);
+// eslint-disable-next-line react-refresh/only-export-components
+export const useResume = () => {
+    return useContext(ResumeContext);
+};

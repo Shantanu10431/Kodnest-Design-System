@@ -85,16 +85,30 @@ export default function ResumePreview({ isPreviewMode = false }) {
             {projects.length > 0 && (
                 <section className="mb-8">
                     <h2 className={s.sectionTitle}>Projects</h2>
-                    <div className="space-y-4">
+                    <div className="space-y-6">
                         {projects.map((proj) => (
                             <div key={proj.id} className="break-inside-avoid">
                                 <div className="flex justify-between items-baseline mb-1">
                                     <h3 className="font-bold">{proj.name}</h3>
-                                    {proj.link && (
-                                        <a href={`https://${proj.link}`} target="_blank" rel="noreferrer" className="text-xs text-brand-600 flex items-center gap-1 hover:underline">
-                                            {proj.link} <ExternalLink size={10} />
-                                        </a>
-                                    )}
+                                    <div className="flex gap-3 text-xs">
+                                        {proj.liveUrl && (
+                                            <a href={`https://${proj.liveUrl}`} target="_blank" rel="noreferrer" className="text-brand-600 flex items-center gap-1 hover:underline">
+                                                Live Demo <ExternalLink size={10} />
+                                            </a>
+                                        )}
+                                        {proj.githubUrl && (
+                                            <a href={`https://${proj.githubUrl}`} target="_blank" rel="noreferrer" className="text-gray-600 flex items-center gap-1 hover:underline">
+                                                GitHub <Github size={10} />
+                                            </a>
+                                        )}
+                                    </div>
+                                </div>
+                                <div className="flex flex-wrap gap-2 mb-2">
+                                    {(proj.techStack || []).map((tech, i) => (
+                                        <span key={i} className="text-[10px] font-semibold bg-gray-100 px-2 py-0.5 rounded text-gray-700 uppercase tracking-wide">
+                                            {tech}
+                                        </span>
+                                    ))}
                                 </div>
                                 <p className="text-sm leading-relaxed">{proj.description}</p>
                             </div>
@@ -123,16 +137,40 @@ export default function ResumePreview({ isPreviewMode = false }) {
             )}
 
             {/* Skills */}
-            {skills.length > 0 && (
+            {skills && (Object.keys(skills).length > 0 || Array.isArray(skills)) && (
                 <section className="break-inside-avoid">
                     <h2 className={s.sectionTitle}>Skills</h2>
-                    <div className="flex flex-wrap gap-2">
-                        {skills.map((skill, index) => (
-                            <span key={index} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs font-semibold rounded-md">
-                                {skill}
-                            </span>
-                        ))}
-                    </div>
+
+                    {Array.isArray(skills) ? (
+                        /* Fallback for old data format */
+                        <div className="flex flex-wrap gap-2">
+                            {skills.map((skill, index) => (
+                                <span key={index} className="bg-gray-100 text-gray-800 text-xs font-semibold px-2.5 py-0.5 rounded border border-gray-200">
+                                    {skill}
+                                </span>
+                            ))}
+                        </div>
+                    ) : (
+                        /* New Categorized Format */
+                        <div className="grid grid-cols-1 gap-4">
+                            {Object.entries(skills).map(([category, categorySkills]) => (
+                                categorySkills.length > 0 && (
+                                    <div key={category} className="flex flex-col sm:flex-row sm:gap-4">
+                                        <span className="text-xs font-bold uppercase text-gray-500 w-32 shrink-0 py-1">
+                                            {category === 'tools' ? 'Tools' : category}
+                                        </span>
+                                        <div className="flex flex-wrap gap-2">
+                                            {categorySkills.map((skill, index) => (
+                                                <span key={index} className="bg-gray-100 text-gray-800 text-xs font-semibold px-2.5 py-1 rounded border border-gray-200">
+                                                    {skill}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )
+                            ))}
+                        </div>
+                    )}
                 </section>
             )}
         </div>
