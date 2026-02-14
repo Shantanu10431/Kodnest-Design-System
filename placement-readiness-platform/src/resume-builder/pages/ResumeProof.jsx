@@ -118,6 +118,16 @@ Status: Shipped
                             <CardTitle>Artifact Links</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
+                            <button
+                                onClick={() => setUrls({
+                                    lovable: 'https://lovable.dev/project/demo',
+                                    github: 'https://github.com/username/demo-repo',
+                                    deploy: 'https://demo-project.vercel.app'
+                                })}
+                                className="text-xs text-indigo-600 hover:text-indigo-800 hover:underline font-medium mb-2"
+                            >
+                                Fill with Demo Data
+                            </button>
                             <div className="space-y-2">
                                 <label className="text-sm font-medium flex items-center gap-2"><LinkIcon className="w-4 h-4" /> Lovable Project</label>
                                 <input
