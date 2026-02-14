@@ -58,6 +58,16 @@ Features Implemented:
                 </div>
 
                 <div className="space-y-6">
+                    <button
+                        onClick={() => setLinks({
+                            lovable: 'https://lovable.dev/project/demo-resume',
+                            github: 'https://github.com/username/demo-resume',
+                            deploy: 'https://demo-resume.vercel.app'
+                        })}
+                        className="text-xs text-brand-600 hover:text-brand-800 hover:underline font-medium mb-2"
+                    >
+                        Fill with Demo Data
+                    </button>
                     <Input
                         label="Lovable Project Link"
                         placeholder="https://lovable.dev/..."
@@ -90,8 +100,8 @@ Features Implemented:
                         onClick={handleCopy}
                         disabled={!isComplete}
                         className={`w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all ${isComplete
-                                ? 'bg-brand-600 text-white hover:bg-brand-700 shadow-lg hover:shadow-xl'
-                                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                            ? 'bg-brand-600 text-white hover:bg-brand-700 shadow-lg hover:shadow-xl'
+                            : 'bg-gray-200 text-gray-400 cursor-not-allowed'
                             }`}
                     >
                         {copied ? <CheckCircle size={24} /> : <Copy size={24} />}
