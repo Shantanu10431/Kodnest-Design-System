@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
+import { Settings } from 'lucide-react';
 
 export default function Navbar() {
   const location = useLocation();
@@ -16,11 +17,16 @@ export default function Navbar() {
         <Link to="/dashboard" className={isActive('/dashboard')}>Dashboard</Link>
         <Link to="/saved" className={isActive('/saved')}>Saved</Link>
         <Link to="/digest" className={isActive('/digest')}>Digest</Link>
-        <Link to="/settings" className={isActive('/settings')}>Settings</Link>
         <Link to="/proof" className={isActive('/proof')}>Proof</Link>
-        <a href="http://localhost:5177" target="_blank" rel="noopener noreferrer" className="text-indigo-600 font-medium hover:text-indigo-800 ml-4 border-l pl-4 border-gray-300 flex items-center gap-1">
-          Placement Prep ↗
-        </a>
+        <div className="flex items-center gap-4">
+          <a href="http://localhost:5177" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-indigo-600 font-medium text-sm flex items-center gap-1">
+            <span>Placement Platform</span>
+            <span className="text-xs">↗</span>
+          </a>
+          <Link to="/settings" className="p-2 text-gray-400 hover:text-indigo-600 transition-colors">
+            <Settings className="w-5 h-5" />
+          </Link>
+        </div>
       </div>
     </nav>
   );
