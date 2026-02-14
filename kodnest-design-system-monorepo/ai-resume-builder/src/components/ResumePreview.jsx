@@ -4,17 +4,47 @@ import { useResume } from '../context/ResumeContext';
 import { MapPin, Mail, Phone, Globe, Linkedin, Github, ExternalLink } from 'lucide-react';
 
 export default function ResumePreview({ isPreviewMode = false }) {
-    const { resumeData } = useResume();
+    const { resumeData, template } = useResume();
     const { personal, summary, experience, education, projects, skills } = resumeData;
 
-    return (
-        <div className={`bg-white shadow-2xl ${isPreviewMode ? 'w-[210mm] min-h-[297mm] mx-auto' : 'w-full min-h-[1000px]'} p-8 md:p-12 text-gray-800 font-sans`}>
-            {/* Header */}
-            <header className="border-b-2 border-gray-900 pb-6 mb-6">
-                <h1 className="text-4xl font-bold uppercase tracking-wider mb-2">{personal.fullName || 'Your Name'}</h1>
-                <p className="text-xl text-gray-600 mb-4">{personal.title || 'Professional Title'}</p>
+    // Template Styles Configuration
+    const styles = {
+        modern: {
+            container: "font-sans text-gray-800",
+            header: "border-b-2 border-gray-900 pb-6 mb-6",
+            name: "text-4xl font-bold uppercase tracking-wider mb-2",
+            title: "text-xl text-brand-600 mb-4",
+            sectionTitle: "text-sm font-bold uppercase tracking-widest text-gray-400 mb-4",
+            meta: "text-brand-600 font-medium mb-2"
+        },
+        classic: {
+            container: "font-serif text-slate-900",
+            header: "text-center border-b border-slate-300 pb-8 mb-8",
+            name: "text-3xl font-bold mb-2",
+            title: "text-lg italic text-slate-600 mb-4",
+            sectionTitle: "text-lg font-bold border-b border-slate-300 pb-1 mb-4 text-slate-800",
+            meta: "text-slate-700 font-bold mb-1"
+        },
+        minimal: {
+            container: "font-sans text-slate-800 max-w-4xl mx-auto",
+            header: "pb-6 mb-6", // No border
+            name: "text-3xl font-light tracking-tight mb-1",
+            title: "text-lg text-slate-500 mb-4",
+            sectionTitle: "text-xs font-bold uppercase tracking-wider text-slate-400 mb-3",
+            meta: "text-slate-900 font-semibold mb-1"
+        }
+    };
 
-                <div className="flex flex-wrap gap-4 text-sm text-gray-600">
+    const s = styles[template] || styles.modern;
+
+    return (
+        <div className={`bg-white shadow-2xl ${isPreviewMode ? 'w-[210mm] min-h-[297mm] mx-auto' : 'w-full min-h-[1000px]'} p-8 md:p-12 ${s.container}`}>
+            {/* Header */}
+            <header className={s.header}>
+                <h1 className={s.name}>{personal.fullName || 'Your Name'}</h1>
+                <p className={s.title}>{personal.title || 'Professional Title'}</p>
+
+                <div className={`flex flex-wrap gap-4 text-sm text-gray-600 ${template === 'classic' ? 'justify-center' : ''}`}>
                     {personal.location && <div className="flex items-center gap-1"><MapPin size={14} /> {personal.location}</div>}
                     {personal.email && <div className="flex items-center gap-1"><Mail size={14} /> {personal.email}</div>}
                     {personal.phone && <div className="flex items-center gap-1"><Phone size={14} /> {personal.phone}</div>}
@@ -26,25 +56,25 @@ export default function ResumePreview({ isPreviewMode = false }) {
 
             {/* Summary */}
             {summary && (
-                <section className="mb-6">
-                    <h2 className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-3">Professional Summary</h2>
-                    <p className="text-gray-700 leading-relaxed whitespace-pre-line">{summary}</p>
+                <section className="mb-8 break-inside-avoid">
+                    <h2 className={s.sectionTitle}>Professional Summary</h2>
+                    <p className="leading-relaxed whitespace-pre-line">{summary}</p>
                 </section>
             )}
 
             {/* Experience */}
             {experience.length > 0 && (
-                <section className="mb-6">
-                    <h2 className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-4">Experience</h2>
+                <section className="mb-8">
+                    <h2 className={s.sectionTitle}>Experience</h2>
                     <div className="space-y-6">
                         {experience.map((exp) => (
-                            <div key={exp.id}>
+                            <div key={exp.id} className="break-inside-avoid">
                                 <div className="flex justify-between items-baseline mb-1">
                                     <h3 className="font-bold text-lg">{exp.role}</h3>
                                     <span className="text-sm text-gray-500">{exp.date}</span>
                                 </div>
-                                <div className="text-brand-600 font-medium mb-2">{exp.company}</div>
-                                <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-line">{exp.description}</p>
+                                <div className={s.meta}>{exp.company}</div>
+                                <p className="text-sm leading-relaxed whitespace-pre-line">{exp.description}</p>
                             </div>
                         ))}
                     </div>
@@ -53,11 +83,11 @@ export default function ResumePreview({ isPreviewMode = false }) {
 
             {/* Projects */}
             {projects.length > 0 && (
-                <section className="mb-6">
-                    <h2 className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-4">Projects</h2>
+                <section className="mb-8">
+                    <h2 className={s.sectionTitle}>Projects</h2>
                     <div className="space-y-4">
                         {projects.map((proj) => (
-                            <div key={proj.id}>
+                            <div key={proj.id} className="break-inside-avoid">
                                 <div className="flex justify-between items-baseline mb-1">
                                     <h3 className="font-bold">{proj.name}</h3>
                                     {proj.link && (
@@ -66,7 +96,7 @@ export default function ResumePreview({ isPreviewMode = false }) {
                                         </a>
                                     )}
                                 </div>
-                                <p className="text-gray-700 text-sm">{proj.description}</p>
+                                <p className="text-sm leading-relaxed">{proj.description}</p>
                             </div>
                         ))}
                     </div>
@@ -75,8 +105,8 @@ export default function ResumePreview({ isPreviewMode = false }) {
 
             {/* Education */}
             {education.length > 0 && (
-                <section className="mb-6">
-                    <h2 className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-4">Education</h2>
+                <section className="mb-8 break-inside-avoid">
+                    <h2 className={s.sectionTitle}>Education</h2>
                     <div className="space-y-4">
                         {education.map((edu) => (
                             <div key={edu.id}>
@@ -94,8 +124,8 @@ export default function ResumePreview({ isPreviewMode = false }) {
 
             {/* Skills */}
             {skills.length > 0 && (
-                <section>
-                    <h2 className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-3">Skills</h2>
+                <section className="break-inside-avoid">
+                    <h2 className={s.sectionTitle}>Skills</h2>
                     <div className="flex flex-wrap gap-2">
                         {skills.map((skill, index) => (
                             <span key={index} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs font-semibold rounded-md">

@@ -6,3 +6,14 @@
   --color-brand-600: #2563eb;
   --color-brand-700: #1d4ed8;
 }
+
+@media print {
+  @page {
+    margin: 0;
+  }
+
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

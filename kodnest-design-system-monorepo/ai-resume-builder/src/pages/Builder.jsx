@@ -4,9 +4,10 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { useResume } from '../context/ResumeContext';
 import ResumePreview from '../components/ResumePreview';
 import { ChevronDown, ChevronUp, Plus, Trash2, Wand2, Eye, Save } from 'lucide-react';
+import GuidanceTextarea from '../components/GuidanceTextarea';
 
 export default function Builder() {
-    const { resumeData, updatePersonal, updateSection, loadSample, score, suggestions } = useResume();
+    const { resumeData, updatePersonal, updateSection, loadSample, score, suggestions, template, setTemplate } = useResume();
     const [activeSection, setActiveSection] = useState('personal');
     const [searchParams] = useSearchParams();
 
@@ -47,16 +48,27 @@ export default function Builder() {
                 {/* Scrollable Content */}
                 <div className="flex-1 overflow-y-auto custom-scrollbar">
                     <div className="p-6 space-y-6">
-                        <div className="flex justify-between items-center bg-gray-50 p-4 rounded-lg border border-gray-100">
+                        <div className="flex justify-between items-center bg-gray-50 p-4 rounded-lg border border-gray-100 mb-6">
                             <h2 className="font-bold text-gray-800">Editor</h2>
-                            <button onClick={loadSample} className="text-xs font-semibold text-brand-600 hover:text-brand-700 bg-white border border-brand-200 px-3 py-1 rounded-full transition-colors shadow-sm">
-                                <Wand2 size={12} className="inline mr-1" />
-                                Load Sample
-                            </button>
+                            <div className="flex gap-2">
+                                <select
+                                    className="text-xs font-semibold text-gray-700 bg-white border border-gray-300 px-3 py-1.5 rounded-md outline-none focus:ring-2 focus:ring-brand-500"
+                                    value={template}
+                                    onChange={(e) => setTemplate(e.target.value)}
+                                >
+                                    <option value="modern">Modern</option>
+                                    <option value="classic">Classic</option>
+                                    <option value="minimal">Minimal</option>
+                                </select>
+                                <button onClick={loadSample} className="text-xs font-semibold text-brand-600 hover:text-brand-700 bg-white border border-brand-200 px-3 py-1.5 rounded-md transition-colors shadow-sm">
+                                    <Wand2 size={12} className="inline mr-1" />
+                                    Sample
+                                </button>
+                            </div>
                         </div>
 
-                        {/* ATS Score Panel */}
-                        <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm space-y-4">
+                        {/* ATS Score & Improvements Panel */}
+                        <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm space-y-4 mb-8">
                             <div className="flex justify-between items-end">
                                 <div>
                                     <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
@@ -64,7 +76,9 @@ export default function Builder() {
                                     </h3>
                                     <p className="text-xs text-gray-500 mt-1">Optimize for recruitment algorithms.</p>
                                 </div>
-                                <div className="text-2xl font-black text-brand-600">{score}/100</div>
+                                <div className={`text-2xl font-black ${score >= 80 ? 'text-green-600' : score >= 50 ? 'text-amber-500' : 'text-red-500'}`}>
+                                    {score}/100
+                                </div>
                             </div>
 
                             {/* Score Meter */}
@@ -75,15 +89,15 @@ export default function Builder() {
                                 />
                             </div>
 
-                            {/* Suggestions */}
+                            {/* Top 3 Improvements */}
                             {suggestions.length > 0 && (
                                 <div className="bg-amber-50 rounded-lg p-3 border border-amber-100">
-                                    <p className="text-xs font-bold text-amber-800 mb-2 uppercase tracking-wide">Improvements needed:</p>
-                                    <ul className="space-y-1">
+                                    <p className="text-xs font-bold text-amber-800 mb-2 uppercase tracking-wide">Top 3 Improvements</p>
+                                    <ul className="space-y-2">
                                         {suggestions.map((s, i) => (
-                                            <li key={i} className="text-xs text-amber-700 flex items-start gap-1.5">
-                                                <span className="mt-0.5 min-w-[4px] h-[4px] rounded-full bg-amber-400" />
-                                                <span>{s}</span>
+                                            <li key={i} className="text-xs text-amber-900 flex items-start gap-2">
+                                                <span className="mt-1 min-w-[6px] h-[6px] rounded-full bg-amber-500" />
+                                                <span className="leading-snug">{s}</span>
                                             </li>
                                         ))}
                                     </ul>
@@ -151,9 +165,9 @@ export default function Builder() {
                                             updateSection('experience', newExp);
                                         }} />
                                     </div>
-                                    <textarea
-                                        className="w-full h-24 p-3 border border-gray-200 rounded-lg text-sm resize-none"
-                                        placeholder="Description..."
+                                    <GuidanceTextarea
+                                        className="w-full h-32 p-3 border border-gray-200 rounded-lg text-sm resize-none custom-scrollbar"
+                                        placeholder="• Led development of... (Start with action verbs, use numbers)"
                                         value={exp.description}
                                         onChange={(e) => {
                                             const newExp = [...resumeData.experience];
@@ -196,9 +210,9 @@ export default function Builder() {
                                             updateSection('projects', newProj);
                                         }} />
                                     </div>
-                                    <textarea
-                                        className="w-full h-24 p-3 border border-gray-200 rounded-lg text-sm resize-none"
-                                        placeholder="Description..."
+                                    <GuidanceTextarea
+                                        className="w-full h-32 p-3 border border-gray-200 rounded-lg text-sm resize-none custom-scrollbar"
+                                        placeholder="• Built a full-stack app using... (Mention tech stack & impact)"
                                         value={proj.description}
                                         onChange={(e) => {
                                             const newProj = [...resumeData.projects];
@@ -269,15 +283,15 @@ export default function Builder() {
 
                     </div>
                 </div>
-            </div>
+            </div >
 
             {/* Right Panel - Preview */}
-            <div className="w-1/2 bg-gray-100 p-8 overflow-y-auto flex items-start justify-center">
+            < div className="w-1/2 bg-gray-100 p-8 overflow-y-auto flex items-start justify-center" >
                 <div className="transform scale-[0.8] origin-top">
                     <ResumePreview />
                 </div>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 }
 

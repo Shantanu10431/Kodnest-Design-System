@@ -75,6 +75,10 @@ export function ResumeProvider({ children }) {
         return saved ? JSON.parse(saved) : initialResumeState;
     });
 
+    const [template, setTemplate] = useState(() => {
+        return localStorage.getItem('resumeTemplate') || 'modern';
+    });
+
     const [score, setScore] = useState(0);
     const [suggestions, setSuggestions] = useState([]);
 
@@ -83,64 +87,64 @@ export function ResumeProvider({ children }) {
         calculateScore();
     }, [resumeData]);
 
+    useEffect(() => {
+        localStorage.setItem('resumeTemplate', template);
+    }, [template]);
+
     const calculateScore = () => {
         let currentScore = 0;
         let newSuggestions = [];
 
         const { personal, summary, experience, education, projects, skills } = resumeData;
 
-        // 1. Summary Length (40-120 words) -> +15
+        // 1. Summary Length (40-120 words)
         const summaryWords = summary.trim().split(/\s+/).length;
         if (summaryWords >= 40 && summaryWords <= 120) {
             currentScore += 15;
         } else {
-            newSuggestions.push("Write a stronger summary (40–120 words).");
+            newSuggestions.push("Expand summary to 40-120 words.");
         }
 
-        // 2. Projects >= 2 -> +10
+        // 2. Projects >= 2
         if (projects.length >= 2) {
             currentScore += 10;
         } else {
             newSuggestions.push("Add at least 2 projects.");
         }
 
-        // 3. Experience >= 1 -> +10
+        // 3. Experience >= 1
         if (experience.length >= 1) {
             currentScore += 10;
         } else {
-            newSuggestions.push("Add at least 1 experience entry.");
+            newSuggestions.push("Add at least 1 internship or work experience.");
         }
 
-        // 4. Skills >= 8 -> +10
+        // 4. Skills >= 8
         if (skills.length >= 8) {
             currentScore += 10;
         } else {
             newSuggestions.push("Add more skills (target 8+).");
         }
 
-        // 5. Links (GitHub || LinkedIn) -> +10
+        // 5. Links
         if (personal.github || personal.linkedin) {
             currentScore += 10;
-        } else {
-            newSuggestions.push("Add GitHub or LinkedIn link.");
         }
 
-        // 6. Numbers in bullets -> +15
+        // 6. Impact (Numbers)
         const hasNumbers = [...experience, ...projects].some(item =>
             item.description && /\d+|%|k\b|X\b/i.test(item.description)
         );
         if (hasNumbers) {
             currentScore += 15;
         } else {
-            newSuggestions.push("Add measurable impact (numbers) in bullets.");
+            newSuggestions.push("Add measurable impact (numbers, %, etc.) to bullets.");
         }
 
-        // 7. Education Complete -> +10
+        // 7. Education
         const eduComplete = education.length > 0 && education.every(e => e.school && e.degree && e.date);
         if (eduComplete) {
             currentScore += 10;
-        } else {
-            newSuggestions.push("Add complete education details.");
         }
 
         // Base Score for Contact Info (to ensure 100 possible)
@@ -168,7 +172,7 @@ export function ResumeProvider({ children }) {
     const loadSample = () => setResumeData(sampleResume);
 
     return (
-        <ResumeContext.Provider value={{ resumeData, updatePersonal, updateSection, loadSample, score, suggestions }}>
+        <ResumeContext.Provider value={{ resumeData, updatePersonal, updateSection, loadSample, score, suggestions, template, setTemplate }}>
             {children}
         </ResumeContext.Provider>
     );
