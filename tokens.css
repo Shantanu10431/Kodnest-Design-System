@@ -1,0 +1,48 @@
+/**
+ * KodNest Premium Build System — Design Tokens
+ * Philosophy: Calm, Intentional, Coherent.
+ * No gradients, no glassmorphism, no neon.
+ */
+
+:root {
+  /* —— Color System (Max 4) —— */
+  --kn-background: #F7F6F3; /* Off-white */
+  --kn-text: #111111;       /* Primary text */
+  --kn-accent: #8B0000;     /* Deep Red */
+  --kn-success: #2e7d32;    /* Muted Green */
+  --kn-warning: #ffa000;    /* Muted Amber */
+  --kn-border: #E0E0E0;     /* Subtle border */
+  --kn-white: #FFFFFF;      /* Pure white for cards */
+
+  /* Aliases */
+  --kn-text-muted: #666666;
+  --kn-border-focus: var(--kn-accent);
+
+  /* —— Typography —— */
+  /* Headings: Serif, confident */
+  --kn-font-serif: "Playfair Display", Georgia, "Times New Roman", serif;
+  /* Body: Clean sans-serif */
+  --kn-font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  --kn-heading-line: 1.3;
+  --kn-body-line: 1.6;
+  
+  --kn-heading1-size: 32px;
+  --kn-heading2-size: 24px;
+  --kn-heading3-size: 20px;
+  --kn-heading4-size: 18px;
+  --kn-body-size: 16px;
+  --kn-small-size: 14px;
+
+  /* —— Spacing Scale (Strict) —— */
+  --kn-space-1: 8px;
+  --kn-space-2: 16px;
+  --kn-space-3: 24px;
+  --kn-space-4: 40px;
+  --kn-space-5: 64px;
+
+  /* —— Output Constraints —— */
+  --kn-text-measure: 720px;
+  --kn-radius: 6px; /* Subtle radius */
+  --kn-transition: 150ms ease-in-out;
+}

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Job Notification Tracker — KodNest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="tokens.css" />
+  <link rel="stylesheet" href="base.css" />
+</head>
+<body>
+  <div class="kn-app-layout">
+    <header class="kn-app-nav" id="app-nav">
+      <a href="#/dashboard" class="kn-app-nav__brand">Job Notification Tracker</a>
+      <button type="button" class="kn-app-nav__burger" id="nav-burger" aria-label="Toggle menu">
+        <span class="kn-app-nav__burger-icon"></span>
+      </button>
+      <ul class="kn-app-nav__links">
+        <li><a href="#/dashboard" data-route="dashboard">Dashboard</a></li>
+        <li><a href="#/saved" data-route="saved">Saved</a></li>
+        <li><a href="#/digest" data-route="digest">Digest</a></li>
+        <li><a href="#/settings" data-route="settings">Settings</a></li>
+        <li><a href="#/proof" data-route="proof">Proof</a></li>
+      </ul>
+    </header>
+
+    <main class="kn-app-main" id="route-content">
+      <div class="kn-route-page">
+        <h1 class="kn-route-page__title" id="route-title">Dashboard</h1>
+        <p class="kn-route-page__subtext" id="route-subtext">This section will be built in the next step.</p>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      var routes = {
+        '': 'Dashboard',
+        'dashboard': 'Dashboard',
+        'saved': 'Saved',
+        'digest': 'Digest',
+        'settings': 'Settings',
+        'proof': 'Proof'
+      };
+      var subtext = 'This section will be built in the next step.';
+
+      function getRoute() {
+        var hash = (window.location.hash || '#').slice(1).replace(/^\/?/, '') || 'dashboard';
+        return hash || 'dashboard';
+      }
+
+      function render() {
+        var route = getRoute();
+        var name = routes[route] || routes.dashboard;
+        document.getElementById('route-title').textContent = name;
+        document.getElementById('route-subtext').textContent = subtext;
+
+        var links = document.querySelectorAll('.kn-app-nav__links a');
+        links.forEach(function (a) {
+          a.classList.toggle('active', a.getAttribute('data-route') === route);
+        });
+      }
+
+      function closeNav() {
+        document.getElementById('app-nav').classList.remove('kn-app-nav--open');
+      }
+
+      window.addEventListener('hashchange', function () {
+        render();
+        closeNav();
+      });
+
+      document.getElementById('nav-burger').addEventListener('click', function () {
+        document.getElementById('app-nav').classList.toggle('kn-app-nav--open');
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>
