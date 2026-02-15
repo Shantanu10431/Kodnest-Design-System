@@ -36,7 +36,7 @@ const Sidebar = () => {
                 </div>
 
                 <div className="pt-4 border-t border-gray-200 mt-4">
-                    <a href="http://localhost:5173" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-600 hover:text-indigo-600 hover:bg-gray-50 rounded-md transition-colors">
+                    <a href="http://localhost:5174" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-600 hover:text-indigo-600 hover:bg-gray-50 rounded-md transition-colors">
                         <ExternalLink className="w-5 h-5" />
                         Job Tracker ↗
                     </a>
