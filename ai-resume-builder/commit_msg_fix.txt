@@ -1,1 +1,0 @@
-Fix: Resolve white page crash by handling legacy data and null checks
