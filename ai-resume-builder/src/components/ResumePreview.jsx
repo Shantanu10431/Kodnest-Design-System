@@ -65,7 +65,7 @@ export default function ResumePreview({ isPreviewMode = false }) {
                             {skills && (
                                 <div className="space-y-4">
                                     {Object.entries(Array.isArray(skills) ? { Skills: skills } : skills).map(([cat, list]) =>
-                                        list.length > 0 && (
+                                        (list && list.length > 0) && (
                                             <div key={cat}>
                                                 <p className="font-bold opacity-70 uppercase text-[10px] mb-1">{cat}</p>
                                                 <div className="flex flex-wrap gap-1">
@@ -239,7 +239,7 @@ export default function ResumePreview({ isPreviewMode = false }) {
                     <h2 className={s.sectionTitle} style={{ color: themeColor, borderColor: themeColor }}>Skills</h2>
                     <div className="grid grid-cols-1 gap-3">
                         {Object.entries(Array.isArray(skills) ? { '': skills } : skills).map(([cat, list]) =>
-                            list.length > 0 && (
+                            (list && list.length > 0) && (
                                 <div key={cat} className="flex gap-2">
                                     {cat && <span className="text-xs font-bold uppercase w-24 shrink-0 mt-1 text-gray-500">{cat}</span>}
                                     <div className="flex flex-wrap gap-2">

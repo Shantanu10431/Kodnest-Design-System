@@ -29,7 +29,7 @@ export default function Preview() {
             '\nEDUCATION',
             ...education.map(e => `${e.school} - ${e.degree} (${e.date})`),
             '\nSKILLS',
-            skills.join(', ')
+            Object.values(skills).flat().join(', ')
         ];
 
         const text = sections.filter(Boolean).join('\n');

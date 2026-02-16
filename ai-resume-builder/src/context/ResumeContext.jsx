@@ -6,16 +6,31 @@ const ResumeContext = createContext();
 export function ResumeProvider({ children }) {
     const [resumeData, setResumeData] = useState(() => {
         const saved = localStorage.getItem('resumeBuilderData');
-        const parsed = saved ? JSON.parse(saved) : initialResumeState;
+        let parsed = saved ? JSON.parse(saved) : initialResumeState;
 
-        // Data Migration: Skills Array to Object
-        if (Array.isArray(parsed.skills)) {
+        // 1. Handle Legacy Skills Array -> Object Migration FIRST
+        if (parsed.skills && Array.isArray(parsed.skills)) {
             parsed.skills = {
                 technical: parsed.skills,
                 soft: [],
                 tools: []
             };
         }
+
+        // 2. Ensure all top-level keys exist by merging with initialResumeState
+        parsed = { ...initialResumeState, ...parsed };
+
+        // 3. Ensure nested objects exist (Safe merge)
+        parsed.personal = { ...initialResumeState.personal, ...(parsed.personal || {}) };
+
+        // Ensure skills is an object (it should be now, but safe fallback)
+        parsed.skills = { ...initialResumeState.skills, ...(parsed.skills || {}) };
+
+        // 4. Ensure arrays exist
+        parsed.experience = Array.isArray(parsed.experience) ? parsed.experience : [];
+        parsed.education = Array.isArray(parsed.education) ? parsed.education : [];
+        parsed.projects = Array.isArray(parsed.projects) ? parsed.projects : [];
+
         return parsed;
     });
 
